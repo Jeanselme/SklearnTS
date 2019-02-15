@@ -9,8 +9,8 @@ def check_size(data, labels):
         labels {Dict of labels} -- Labels to use
     """
     if isinstance(data, dict):
-        dim = None
         for d in data:
+            assert d in labels, "Datapoint {} has no associated labels".format(d)
             assert len(np.array(data[d]).shape) <= 2
             assert len(data[d]) == len(labels[d]), "Inconstitancy in the shape of data and label for {} expected {} labels but received {}".format(d, len(data[d]), len(labels[d]))
             assert len(np.array(labels[d]).flatten()) == len(labels[d]), "Expect one dimension labels"
