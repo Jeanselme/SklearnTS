@@ -32,8 +32,8 @@ class ModelDictionary():
         flatData, flatLabel = flatten(data, labels)
         return self.model.score(flatData, flatLabel)
 
-    def predict_proba(self, data):
+    def predict(self, data):
         if isinstance(data, dict):
-            return {d: self.predict_proba(data[d]) for d in data}
+            return {d: self.predict(data[d]) for d in data}
         else:
-           return self.model.predict_proba(data)
+           return self.model.predict(data)

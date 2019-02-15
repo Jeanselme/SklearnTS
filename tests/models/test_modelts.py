@@ -17,7 +17,7 @@ class TestModelTS(unittest.TestCase):
        
         model.fit(self.data, self.labels)
         model.score(self.data, self.labels)
-        predictions = model.predict_proba(self.data)
+        predictions = model.predict(self.data)
         self.assertEqual(len(predictions), len(self.data))
         
         for d in self.data:

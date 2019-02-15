@@ -18,5 +18,5 @@ def cross_validation(model, data, labels, folds):
     for k in folds:
         data_fold, labels_fold = flatten({d: data[d] for d in data if d not in folds[k]}, {d: labels[d] for d in data if d not in folds[k]})
         model.fit(data_fold, labels_fold)
-        predictions.update(model.predict_proba({d: data[d] for d in folds[k]}))
+        predictions.update(model.predict({d: data[d] for d in folds[k]}))
     return predictions
