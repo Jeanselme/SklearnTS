@@ -1,7 +1,7 @@
 def pushZeroTime(ts, deep = False):
     """
     Invert the time axis, ie the last point of the time series become zero
-    And all points before are negative times
+    And all points before are positive times
     
     Arguments:
         ts {Dataframe / Time Series} -- The time series to invert
@@ -10,5 +10,5 @@ def pushZeroTime(ts, deep = False):
         The inverted time series
     """
     res = ts.copy(deep)
-    res.index = ts.index - max(ts.index)
+    res.index =  max(ts.index) - ts.index
     return res

@@ -12,8 +12,8 @@ class TestTsTransformation(unittest.TestCase):
 
     def test_pushZeroTime(self):
         res = pushZeroTime(self.ts)
-        self.assertEqual(res.index.max(), - self.ts.index.min())
-        self.assertEqual(res.index.min(), - self.ts.index.max())
+        self.assertEqual(res.index.max(), self.ts.index.max())
+        self.assertEqual(res.index.min(), self.ts.index.min())
 
 if __name__ == '__main__':
     unittest.main()
