@@ -35,5 +35,5 @@ def computeMeanStdCount(tsList):
         std             -- Std of the ts
         number_points   -- Number points which allow to compute those values
     """
-    result = pd.concat(tsList, axis=1, sort=True)
+    result = pd.concat(tsList, axis=1)
     return result.aggregate(["mean", "std", "count"], axis="columns")
