@@ -25,5 +25,14 @@ class TestCrossValidation(unittest.TestCase):
         for d in self.data:
             self.assertEqual(len(self.labels[d]), len(predictions[d]))
 
+        # Ignore label 2
+        predictions = cross_validation(model, self.data, self.labels, {j: range(j*split, (j+1)*split) for j in range(n_split)}, [0, 1])
+
+        self.assertEqual(len(predictions), len(self.data))
+        
+        for d in self.data:
+            self.assertEqual(len(self.labels[d]), len(predictions[d]))
+
+
 if __name__ == '__main__':
     unittest.main()

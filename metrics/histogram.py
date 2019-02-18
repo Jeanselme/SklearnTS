@@ -2,9 +2,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from utils.utils import flatten
+from utils.utils import flatten, selection
 
-def histPlot(predictions, truth, label = "Model", newFigure = None, splitPosNeg = False, kde = False):
+def histPlot(predictions, truth, classes = {"+": 1, "-": 0}, label = "Model", newFigure = None, splitPosNeg = False, kde = False):
     """
         Computes the histograms of a binary predictions
         
@@ -18,7 +18,7 @@ def histPlot(predictions, truth, label = "Model", newFigure = None, splitPosNeg 
             splitPosNeg {bool} -- Split between positive and negative (default: {False})
             kde {bool} -- Computes the kde of the histogram (default: {False})
     """
-
+    predictions, truth = selection(predictions, truth, classes)
     predictions, truth = flatten(predictions, truth)
     bins = np.linspace(0, 1, 20)
 

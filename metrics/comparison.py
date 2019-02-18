@@ -5,13 +5,14 @@ from metrics.roc import rocPlot
 from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
 
-def rocCompare(listModels, truth):
+def rocCompare(listModels, truth, classes = {"+": 1, "-": 0}):
     """
         Plots the different roc for different models
         
         Arguments:
             listModels {List of (name, predictions)*} -- Models to display
             truth {Dict / List of true labels} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot
     """
     for reverse in [False, True]:
         for log in [False, True]:
@@ -26,13 +27,13 @@ def rocCompare(listModels, truth):
                 plt.ylabel('True positive rate')
                 plt.title('ROC curve')
             for (name, predictions) in listModels:
-                rocPlot(predictions, truth, name, "Roc", reverse)
+                rocPlot(predictions, truth, classes, name, "Roc", reverse)
             plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
             if log:
                 plt.xscale('log')
             plt.show()
 
-def histCompare(listModels, truth, splitPosNeg = False, kde = False):
+def histCompare(listModels, truth, classes = {"+": 1, "-": 0}, splitPosNeg = False, kde = False):
     """
         Plots the different histogram of predictions
 
@@ -45,11 +46,11 @@ def histCompare(listModels, truth, splitPosNeg = False, kde = False):
     plt.ylabel('Frequency')
     plt.title('Histogram Probabilities')
     for (name, predictions) in listModels:
-        histPlot(predictions, truth, name, "Histogram Probabilities", splitPosNeg, kde)
+        histPlot(predictions, truth, classes, name, "Histogram Probabilities", splitPosNeg, kde)
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
 
-def calibrationCompare(listModels, truth, n_bins = 5):
+def calibrationCompare(listModels, truth, classes = {"+": 1, "-": 0}, n_bins = 5):
     """
         Plots the different histogram of predictions
 
@@ -63,6 +64,6 @@ def calibrationCompare(listModels, truth, n_bins = 5):
     plt.title('Calibration')
     plt.plot([0, 1], [0, 1], 'k--', label="Perfect calibration")
     for (name, predictions) in listModels:
-        calibrationPlot(predictions, truth, name, "Calibration", n_bins)
+        calibrationPlot(predictions, truth, classes, name, "Calibration", n_bins)
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()

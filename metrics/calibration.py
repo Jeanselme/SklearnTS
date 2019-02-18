@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import normalize
 from sklearn.calibration import calibration_curve
 
-from utils.utils import flatten
+from utils.utils import flatten, selection
 
-def calibrationPlot(predictions, truth, label = "Model", newFigure = None, n_bins = 5):
+def calibrationPlot(predictions, truth, classes = {"+": 1, "-": 0}, label = "Model", newFigure = None, n_bins = 5):
     """
         Computes the roc with confidence bounds for the given model
         
@@ -17,7 +18,9 @@ def calibrationPlot(predictions, truth, label = "Model", newFigure = None, n_bin
             newFigure {str} -- Display on a given figure (default: {None} - Create new figure)
             n_bins {int} -- Numbre of bins for the calibration (default: {5})
     """
+    predictions, truth = selection(predictions, truth, classes)
     predictions, truth = flatten(predictions, truth)
+    predictions = normalize(predictions, "max").flatten() # Avoid 0
     fraction_of_positives, mean_predicted_value = calibration_curve(truth, predictions, n_bins = n_bins)
     bins = np.linspace(0., 1. + 1e-8, n_bins + 1)
     binids = np.digitize(predictions, bins) - 1
@@ -27,10 +30,9 @@ def calibrationPlot(predictions, truth, label = "Model", newFigure = None, n_bin
     if newFigure is not None:
         plt.figure(newFigure)
     else:
-        plt.plot([0, 1], [0, 1], 'k--', label="Perfect calibration")
         plt.xlabel('Mean Predicted Value')
         plt.ylabel('Fraction Positive')
         plt.title('Calibration')
 
     p = plt.plot(mean_predicted_value, fraction_of_positives, alpha = 0.5, ls=':')
-    plt.scatter(mean_predicted_value, fraction_of_positives, s = bin_sums, label = label, color = p[0].get_color())
+    plt.scatter(mean_predicted_value, fraction_of_positives, s = bin_sums, label = label, color = p[0].get_color(), alpha = 0.5)

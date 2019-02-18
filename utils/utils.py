@@ -27,5 +27,30 @@ def flatten(data, labels):
     if isinstance(data, dict):
         patients = list(data.keys())
         data = np.concatenate([np.array(data[p]).reshape((len(data[p]), -1)) for p in patients])
-        labels = np.concatenate([np.array(labels[p]).reshape((len(labels[p]), 1)) for p in patients])
+        labels = np.concatenate([np.array(labels[p]) for p in patients])
+    return data, labels
+
+def selection(data, labels, classes = None):
+    """
+    Seelcts from data the points that are in classes
+    
+    Arguments:
+        data {Dict/List of times series} -- Time series
+        labels {Dict/List labels} -- Labels associated
+        classes {Dict/List labels} -- Classes to select
+    """
+    if classes is None:
+        return data, labels
+
+    if isinstance(classes, dict):
+        classes = [classes[c] for c in classes]
+
+    if isinstance(data, dict):
+        check_size(data, labels)
+        data = {d: data[d][np.isin(labels[d], classes)] for d in data if np.any(np.isin(labels[d], classes))}
+        labels = {d: labels[d][np.isin(labels[d], classes)] for d in labels if np.any(np.isin(labels[d], classes))}
+    else:
+        data = data[np.isin(labels, classes)]
+        labels = labels[np.isin(labels, classes)]
+
     return data, labels
