@@ -68,4 +68,5 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
     plt.ylabel('Predictions')
     plt.title('Evolution Predictions')
     plt.grid(alpha = .2)
-    plt.show()
+
+    return fig, axes
