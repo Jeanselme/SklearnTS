@@ -5,13 +5,14 @@ from sklearn.calibration import calibration_curve
 
 from utils.utils import flatten, selection
 
-def calibrationPlot(predictions, truth, classes = {"+": 1, "-": 0}, label = "Model", newFigure = None, n_bins = 5):
+def calibrationPlot(predictions, truth, classes = None, label = "Model", newFigure = None, n_bins = 5):
     """
         Computes the roc with confidence bounds for the given model
         
         Arguments:
             predictions {Dict / List} -- Label predictions
             truth {Dict / List} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
         
         Keyword Arguments:
             label {str} -- Legend to plot (default: {"Model"})

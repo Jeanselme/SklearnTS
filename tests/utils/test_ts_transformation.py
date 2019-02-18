@@ -15,5 +15,10 @@ class TestTsTransformation(unittest.TestCase):
         self.assertEqual(res.index.max(), self.ts.index.max())
         self.assertEqual(res.index.min(), self.ts.index.min())
 
+    def test_computeMeanStdCount(self):
+        res = computeMeanStdCount([self.ts, self.ts])
+        self.assertEqual(len(res), len(self.ts))
+        self.assertAlmostEqual(res['mean'].mean(), self.ts.mean(axis = 1).mean())
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,3 +1,4 @@
+import pandas as pd
 from utils.utils import flatten
 
 class ModelDictionary():
@@ -35,5 +36,7 @@ class ModelDictionary():
     def predict(self, data):
         if isinstance(data, dict):
             return {d: self.predict(data[d]) for d in data}
+        elif isinstance(data, pd.DataFrame):
+            return pd.DataFrame(self.model.predict(data), index = data.index, columns = ["Predictions"])
         else:
-           return self.model.predict(data)
+            return self.model.predict(data)

@@ -5,14 +5,14 @@ from metrics.roc import rocPlot
 from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
 
-def rocCompare(listModels, truth, classes = {"+": 1, "-": 0}):
+def rocCompare(listModels, truth, classes = None):
     """
         Plots the different roc for different models
         
         Arguments:
             listModels {List of (name, predictions)*} -- Models to display
             truth {Dict / List of true labels} -- Ground truth
-            classes {Dict "+":int, "-":int} -- Classes to consider to plot
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """
     for reverse in [False, True]:
         for log in [False, True]:
@@ -33,13 +33,14 @@ def rocCompare(listModels, truth, classes = {"+": 1, "-": 0}):
                 plt.xscale('log')
             plt.show()
 
-def histCompare(listModels, truth, classes = {"+": 1, "-": 0}, splitPosNeg = False, kde = False):
+def histCompare(listModels, truth, classes = None, splitPosNeg = False, kde = False):
     """
         Plots the different histogram of predictions
 
         Arguments:
             listModels {List of (name, predictions)*} -- Models to display
             truth {Dict / List of true labels} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """
     plt.figure("Histogram Probabilities")
     plt.xlabel('Predicted Probability')
@@ -50,13 +51,14 @@ def histCompare(listModels, truth, classes = {"+": 1, "-": 0}, splitPosNeg = Fal
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
 
-def calibrationCompare(listModels, truth, classes = {"+": 1, "-": 0}, n_bins = 5):
+def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     """
         Plots the different histogram of predictions
 
         Arguments:
             listModels {List of (name, predictions)*} -- Models to display
             truth {Dict / List of true labels} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """
     plt.figure("Calibration")
     plt.xlabel('Mean Predicted Value')

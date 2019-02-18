@@ -1,9 +1,10 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
-from utils.ts_transformation import pushZeroTime
+from utils.ts_transformation import pushZeroTime, computeMeanStdCount
 
-def evolutionPlot(predictions, truth, label = "Model", newFigure = None, clusters = None):
+def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, colors = {}):
     """
         Computes the evolution of the mean evolution for each class
         With separation in clusters
@@ -11,52 +12,60 @@ def evolutionPlot(predictions, truth, label = "Model", newFigure = None, cluster
         Arguments:
             predictions {Dict / List} -- Label predictions
             truth {Dict / List} -- Ground truth (one label per time series)
+            classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
         
         Keyword Arguments:
             label {str} -- Legend to plot (default: {"Model"})
             newFigure {str} -- Display on a given figure (default: {None} - Create new figure)
-            clusters {int / List of int} -- Number to clsuter to form or list of time bounds (default: {None} - No cluster)
+            clusters {int / List of deltatime} -- Number to clsuter to form or list of time bounds (default: {None} - No cluster)
     """
+    # Computes duration
+    duration = {p: (max(predictions[p].index) - min(predictions[p].index)) for p in predictions}
+
     if clusters is None:
-        clusters = [0, max([len(p) for p in predictions])]
+        clusters = [pd.to_timedelta(0, unit='m'), max([duration[p] for p in predictions])]
     elif type(clusters) is int:
         # Finds the different boundaries to divide the array in equal parts
-        clusters = [0] + [a[-1] for a in np.split([len(p) for p in predictions], clusters)]
+        duration_list = np.sort([duration[p] for p in predictions]).tolist()
+        length = int(len(duration) /  (clusters + 1))
+        clusters = [pd.to_timedelta(0, unit='m')] + [duration_list[i * length] for i in range(1, clusters)] + [duration_list[-1]]
     assert len(clusters) > 1, "Bounds has to have more than one element"
 
+    # Creates the subplots
+    fig, axes = plt.subplots(len(clusters) - 1, 1, sharex = True, sharey = True, squeeze = False, figsize = (8, 10))
+
     for i in range(len(clusters) - 1):
-        selection = [pushZeroTime(p) for p in predictions if clusters[i] < len(predictions[p]) and len(predictions[p]) <= clusters[i+1]]
+        # Select time series in the range
+        selection = [p for p in predictions if ((clusters[i] < duration[p]) and (duration[p] <= clusters[i+1]))]
 
-    global_fpr, global_tpr, _ = roc_curve(truth, predictions)
-    if reverse:
-        x, y = 1 - global_tpr, 1 - global_fpr # FNR, TNR
-        x, y = x[::-1], y[::-1]
-        minx = 1. / np.sum(truth == 1)
-        print("TNR @{:.2f}% FNR : {:.2f}".format(minx*100, np.interp(minx, x, y)), end = ' ')
-    else:
-        x, y = global_fpr, global_tpr
-        minx = 1. / np.sum(truth == 0)
-        print("TPR @{:.2f}% FPR : {:.2f}".format(minx*100, np.interp(minx, x, y)), end = ' ')
+        # Push all points on a similar scale
+        ts = {c : [pushZeroTime(predictions[p], invert = invert) for p in selection if classes[c] == truth[p]] for c in classes}
+        for c in classes:
+            if len(ts[c]) > 1:
+                res = computeMeanStdCount(ts[c])
+                res = res[res["count"] > 1]
+                
+                # Mean
+                axes[i, 0].scatter(res.index.total_seconds() / 3600., res["mean"].values, c = colors[c] if c in colors else None, alpha = 0.5)
+                plMean = axes[i, 0].plot(res.index.total_seconds() / 3600., res["mean"], label = c + " ({})".format(len(ts[c])), c = colors[c] if c in colors else None, alpha = 0.5)
+                
+                # Confidence bounds
+                wilson = 1.96 * np.sqrt(res["mean"] * (1 - res["mean"])/res["count"])
+                axes[i,0].fill_between(res.index.total_seconds() / 3600., res["mean"] + wilson, res["mean"] - wilson, color = plMean[0].get_color(), alpha = 0.25)
 
-            
-    if newFigure is not None:
-        plt.figure(newFigure)
+
+            # Legend
+            axes[i,0].legend(loc='upper right', bbox_to_anchor=(1.3, 1))
+
+    # Create legends 
+    axes[0,0].invert_xaxis()
+    fig.add_subplot(111, frameon = False)
+    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+    if invert:
+        plt.xlabel('Time to event (in hour)')
     else:
-        plt.plot(np.linspace(0, 1, 100), np.linspace(0, 1, 100), 'k--', label="Random")
-        if reverse:
-            plt.xlabel('False negative rate')
-            plt.ylabel('True negative rate')
-            plt.title('Reverse ROC curve')
-        else:
-            plt.xlabel('False positive rate')
-            plt.ylabel('True positive rate')
-            plt.title('ROC curve')
-            
-    newx = np.linspace(minx, 1, 1000)
-    y = np.interp(newx, x, y)
-    wilson = 1.96 * np.sqrt(y * (1 - y)/len(predictions))
-    print("+/- {:.2f}".format(np.interp(0.01, newx, wilson)))
-    upper = np.minimum(y + wilson, 1)
-    lower = np.maximum(y - wilson, 0)
-    plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.))
-    plt.fill_between(newx, lower, upper, color=plRoc[0].get_color(), alpha=.2)
+        plt.xlabel('Time after event (in hour)')
+    plt.ylabel('Predictions')
+    plt.title('Evolution Predictions')
+    plt.grid(alpha = .2)
+    plt.show()

@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 
 from utils.utils import flatten, selection
 
-def histPlot(predictions, truth, classes = {"+": 1, "-": 0}, label = "Model", newFigure = None, splitPosNeg = False, kde = False):
+def histPlot(predictions, truth, classes = None, label = "Model", newFigure = None, splitPosNeg = False, kde = False):
     """
         Computes the histograms of a binary predictions
         
         Arguments:
             predictions {Dict / List} -- Label predictions
             truth {Dict / List} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
         
         Keyword Arguments:
             label {str} -- Legend to plot (default: {"Model"})
