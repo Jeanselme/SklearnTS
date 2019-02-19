@@ -6,8 +6,7 @@ from utils.ts_transformation import pushZeroTime, computeMeanStdCount
 
 def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, colors = {}):
     """
-        Computes the evolution of the mean evolution for each class
-        With separation in clusters
+        isplay the spaghettis of the different time series
 
         Arguments:
             predictions {Dict / List} -- Label predictions
@@ -15,9 +14,9 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
             classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
         
         Keyword Arguments:
-            label {str} -- Legend to plot (default: {"Model"})
-            newFigure {str} -- Display on a given figure (default: {None} - Create new figure)
             clusters {int / List of deltatime} -- Number to clsuter to form or list of time bounds (default: {None} - No cluster)
+            invert {bool} -- Invert time axis (time before event)
+            colors {Dict} -- Same keys than classes
     """
     # Computes duration
     duration = {p: (max(predictions[p].index) - min(predictions[p].index)) for p in predictions}
@@ -59,7 +58,51 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
             axes[i,0].legend(loc='upper right', bbox_to_anchor=(1.3, 1))
 
     # Create legends 
-    axes[0,0].invert_xaxis()
+    if invert:
+        axes[0,0].invert_xaxis()
+
+    fig.add_subplot(111, frameon = False)
+    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+    if invert:
+        plt.xlabel('Time to event (in hour)')
+    else:
+        plt.xlabel('Time after event (in hour)')
+    plt.ylabel('Predictions')
+    plt.grid(alpha = .2)
+
+    return fig, axes
+
+def spaghettiPlot(predictions, truth, classes, invert = True, colors = {}):
+    """
+        Display the spaghettis of the different time series
+
+        Arguments:
+            predictions {Dict / List} -- Label predictions
+            truth {Dict / List} -- Ground truth (one label per time series)
+            classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
+        
+        Keyword Arguments:
+            invert {bool} -- Invert time axis (time before event)
+            colors {Dict} -- Same keys than classes
+    """
+
+    # Creates the subplots
+    fig, axes = plt.subplots(len(classes) + 1, 1, sharex = True, sharey = True, squeeze = False, figsize = (8, 10))
+    axes[-1,0].set_title("All time series")
+
+    for i, c in enumerate(classes):
+        axes[i,0].set_title(c)
+
+        # Select time series of the class
+        patients = [pushZeroTime(predictions[p], invert = invert) for p in predictions if classes[c] == truth[p]]
+        for patient in patients:
+            axes[i, 0].plot(patient.index.total_seconds() / 3600., patient.values, alpha = 0.1)
+            axes[-1, 0].plot(patient.index.total_seconds() / 3600., patient.values, alpha = 0.1, color = colors[c] if c in colors else None)
+
+    # Create legends 
+    if invert:
+        axes[0,0].invert_xaxis()
+
     fig.add_subplot(111, frameon = False)
     plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
     if invert:
