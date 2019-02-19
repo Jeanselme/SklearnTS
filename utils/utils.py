@@ -32,7 +32,7 @@ def flatten(data, labels):
 
 def selection(data, labels, classes = None):
     """
-    Seelcts from data the points that are in classes
+    Selects from data the points that are in classes
     
     Arguments:
         data {Dict/List of times series} -- Time series
@@ -54,3 +54,10 @@ def selection(data, labels, classes = None):
         labels = labels[np.isin(labels, classes)]
 
     return data, labels
+
+def discretization(data, threshold):
+    if isinstance(data, dict):
+        data = {d: discretization(data[d], threshold) for d in data}
+    else:
+        data = data > threshold
+    return data

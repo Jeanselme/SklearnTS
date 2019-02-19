@@ -35,6 +35,7 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
     fig, axes = plt.subplots(len(clusters) - 1, 1, sharex = True, sharey = True, squeeze = False, figsize = (8, 10))
 
     for i in range(len(clusters) - 1):
+        axes[i,0].set_title("Duration {} to {}".format(clusters[i], clusters[i+1]))
         # Select time series in the range
         selection = [p for p in predictions if ((clusters[i] < duration[p]) and (duration[p] <= clusters[i+1]))]
 
@@ -66,7 +67,6 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
     else:
         plt.xlabel('Time after event (in hour)')
     plt.ylabel('Predictions')
-    plt.title('Evolution Predictions')
     plt.grid(alpha = .2)
 
     return fig, axes
