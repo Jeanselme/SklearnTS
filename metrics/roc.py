@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import auc, roc_curve
 
@@ -53,3 +54,37 @@ def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = Non
     lower = np.maximum(y - wilson, 0)
     plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.))
     plt.fill_between(newx, lower, upper, color=plRoc[0].get_color(), alpha=.2)
+
+def aucEvolutionPlot(temporalListLabels, predictions, classes = None, label = "Model", newFigure = None):
+    """
+        Plots the evolution of the auc 
+        
+        Arguments:
+            temporalListLabels {List of (time, labels)*} -- Ground truth labels
+            predictions {Dict / List of labels} -- Predicitons (same format than labels in temporalListLabels)
+            classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
+    """
+    aucs = {}
+    for time, labels in temporalListLabels:
+        pred_time, labels_time = selection(predictions, labels, classes)
+        pred_time, labels_time = flatten(pred_time, labels_time)
+        fpr, tpr, _ = roc_curve(labels_time, pred_time)
+        auc_time = auc(fpr, tpr)
+        wilson = 1.96 * np.sqrt(tpr * (1 - tpr)/len(predictions))
+        aucs[time] = {
+                        "auc": auc_time, 
+                        "lower": auc(fpr, tpr - wilson), 
+                        "upper": auc(fpr, tpr + wilson)
+                     }
+
+    aucs = pd.DataFrame.from_dict(aucs, orient = "index")
+
+    if newFigure is not None:
+        plt.figure(newFigure)
+    else:
+        plt.figure("Evolution AUC")
+        plt.xlabel('Time before event')
+        plt.ylabel('AUC')
+
+    plAuc = plt.plot(aucs.index, aucs["auc"], label = label)
+    plt.fill_between(aucs.index, aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)

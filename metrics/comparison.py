@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from metrics.roc import rocPlot
 from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
+from metrics.roc import rocPlot, aucEvolutionPlot
 
 def rocCompare(listModels, truth, classes = None):
     """
@@ -64,8 +64,26 @@ def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     plt.xlabel('Mean Predicted Value')
     plt.ylabel('Fraction Positive')
     plt.title('Calibration')
-    plt.plot([0, 1], [0, 1], 'k--', label="Perfect calibration")
     for (name, predictions) in listModels:
         calibrationPlot(predictions, truth, classes, name, "Calibration", n_bins)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.show()
+
+def aucEvolutionCompare(listModels, temporalListLabels, classes):
+    """
+        Plots the different histogram of predictions
+
+        Arguments:
+            listModels {List of (name, predictions)*} -- Models to display
+            temporalListLabels {Dict {time: true labels}} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
+    """ 
+    plt.figure("Evolution AUC")
+    plt.xlabel('Time before event')
+    plt.ylabel('AUC')
+    plt.title('Evolution AUC')
+    plt.plot([min(temporalListLabels)[0], max(temporalListLabels)[0]], [0.5, 0.5], 'k--', label="Random Model")
+    for (name, predictions) in listModels:
+        aucEvolutionPlot(temporalListLabels, predictions,classes, name, "Evolution AUC")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()

@@ -85,7 +85,6 @@ def spaghettiPlot(predictions, truth, classes, invert = True, colors = {}):
             invert {bool} -- Invert time axis (time before event)
             colors {Dict} -- Same keys than classes
     """
-
     # Creates the subplots
     fig, axes = plt.subplots(len(classes) + 1, 1, sharex = True, sharey = True, squeeze = False, figsize = (8, 10))
     axes[-1,0].set_title("All time series")
