@@ -16,9 +16,9 @@ class TestGlobal(unittest.TestCase):
     def test_GlobalNormalizationZScore(self):
         norm = GlobalNormalizationZScore() # Normalization given last 3 minutes
 
-        norm.fit(self.data)
-        resT = norm.transform(self.data)
-        resFT = norm.fit_transform(self.data)
+        norm.fit_dict(self.data)
+        resT = norm.transform_dict(self.data)
+        resFT = norm.fit_transform_dict(self.data)
 
         for i in range(self.number_points):
             self.assertEqual(resT[i].index[0].second, 0)
