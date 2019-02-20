@@ -31,7 +31,9 @@ class TestTsTransformation(unittest.TestCase):
 
     def test_accumulator(self):
         acc = Accumulator([Transformation(PCA(2)), GlobalNormalizationZScore()])
-        acc.fit_transform_dict(self.data)
+        acc_res = acc.fit_transform_dict(self.data)
+        self.assertEqual(len(acc_res), len(self.data))
+        self.assertEqual(acc_res[0].shape[1], 2)
 
 if __name__ == '__main__':
     unittest.main()
