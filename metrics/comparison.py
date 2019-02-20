@@ -79,10 +79,10 @@ def aucEvolutionCompare(listModels, temporalListLabels, classes):
             classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """ 
     plt.figure("Evolution AUC")
-    plt.xlabel('Time before event')
+    plt.xlabel('Time before event (in minutes)')
     plt.ylabel('AUC')
     plt.title('Evolution AUC')
-    plt.plot([min(temporalListLabels)[0], max(temporalListLabels)[0]], [0.5, 0.5], 'k--', label="Random Model")
+    plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0.5, 0.5], 'k--', label="Random Model")
     for (name, predictions) in listModels:
         aucEvolutionPlot(temporalListLabels, predictions,classes, name, "Evolution AUC")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))

@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+import pandas as pd
 from metrics.comparison import *
 
 class TestComparison(unittest.TestCase):
@@ -10,10 +11,10 @@ class TestComparison(unittest.TestCase):
         self.predictions = {j: np.random.randint(self.number_classes, size=np.random.randint(10,100)) for j in range(self.number_points)}
         self.labels = {j: np.random.randint(self.number_classes, size=len(self.predictions[j])) for j in range(self.number_points)}
 
-        self.temporal_labels = [(i, {j: self.labels[j].copy() for j in self.labels}) for i in range(5, 50)]
+        self.temporal_labels = [(pd.to_timedelta(i, unit='s'), {j: self.labels[j].copy() for j in self.labels}) for i in range(5, 50)]
         for i, labels in self.temporal_labels:
             for j in labels:
-                labels[j][-i:] = -1
+                labels[j][-i.seconds:] = -1
 
     def test_rocCompare(self):
         rocCompare([("random", self.predictions), ("perfect", self.labels)], self.labels)

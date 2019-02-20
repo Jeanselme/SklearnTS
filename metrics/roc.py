@@ -83,8 +83,9 @@ def aucEvolutionPlot(temporalListLabels, predictions, classes = None, label = "M
         plt.figure(newFigure)
     else:
         plt.figure("Evolution AUC")
-        plt.xlabel('Time before event')
+        plt.xlabel('Time before event (in minutes)')
         plt.ylabel('AUC')
 
-    plAuc = plt.plot(aucs.index, aucs["auc"], label = label)
-    plt.fill_between(aucs.index, aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)
+    plAuc = plt.plot(aucs.index.seconds / 60., aucs["auc"].values, label = label)
+    plt.fill_between(aucs.index.seconds / 60., aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)
+
