@@ -6,6 +6,7 @@ from metrics.comparison import *
 class TestComparison(unittest.TestCase):
 
     def setUp(self):
+        self.dim = 10
         self.number_points = 100
         self.number_classes = 2
         self.predictions = {j: np.random.randint(self.number_classes, size=np.random.randint(10,100)) for j in range(self.number_points)}
@@ -28,6 +29,8 @@ class TestComparison(unittest.TestCase):
     def test_aucEvolutionCompare(self):
         aucEvolutionCompare([("random", self.predictions), ("perfect", self.labels)], self.temporal_labels, classes = {'+':1, '-':0})
 
+    def test_featuresImportanceCompare(self):
+        featuresImportanceCompare([("random", np.random.random(size = self.dim)), ("perfect", np.random.random(size = self.dim))], np.arange(self.dim))
 
 if __name__ == '__main__':
     unittest.main()

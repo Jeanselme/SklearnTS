@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from metrics.histogram import histPlot
@@ -85,5 +86,28 @@ def aucEvolutionCompare(listModels, temporalListLabels, classes):
     plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0.5, 0.5], 'k--', label="Random Model")
     for (name, predictions) in listModels:
         aucEvolutionPlot(temporalListLabels, predictions,classes, name, "Evolution AUC")
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.show()
+
+def featuresImportanceCompare(listModels, featuresNames):
+    """
+        Plots the importance that each model assign to each features
+        
+        Arguments:
+            listModels {List of (name, features_weights)*} -- Models to display
+            featuresNames {str list} -- Same size than features_weights
+    """
+    plt.figure("Features importance", figsize=(8, max(4.8, len(featuresNames) / 5)))
+    plt.xlabel('Weights')
+    plt.ylabel('Features')
+    plt.title('Features importance')
+    weights_model = {}
+    for (name, weights) in listModels:
+        weights_model[name] = {f: w for w, f in zip(weights / np.max(np.abs(weights)), featuresNames)}
+    weights_model = pd.DataFrame.from_dict(weights_model)
+
+    # Sort by mean value of features
+    weights_model = weights_model.reindex(weights_model.mean(axis = "columns").sort_values().index, axis = 0)
+    weights_model.plot.barh(ax = plt.gca())
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
