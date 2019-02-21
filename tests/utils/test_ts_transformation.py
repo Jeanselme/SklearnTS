@@ -2,8 +2,6 @@ import unittest
 import numpy as np
 import pandas as pd
 from utils.ts_transformation import *
-from sklearn.decomposition import PCA
-from normalization.global_norm import GlobalNormalizationZScore
 
 class TestTsTransformation(unittest.TestCase):
 
@@ -22,18 +20,6 @@ class TestTsTransformation(unittest.TestCase):
         res = computeMeanStdCount([self.ts, self.ts])
         self.assertEqual(len(res), len(self.ts))
         self.assertAlmostEqual(res['mean'].mean(), self.ts.mean(axis = 1).mean())
-
-    def test_encapsulation(self):
-        pca = Transformation(PCA(2))
-        pca_res = pca.fit_transform_dict(self.data)
-        self.assertEqual(len(pca_res), len(self.data))
-        self.assertEqual(pca_res[0].shape[1], 2)
-
-    def test_accumulator(self):
-        acc = Accumulator([Transformation(PCA(2)), GlobalNormalizationZScore()])
-        acc_res = acc.fit_transform_dict(self.data)
-        self.assertEqual(len(acc_res), len(self.data))
-        self.assertEqual(acc_res[0].shape[1], 2)
 
 if __name__ == '__main__':
     unittest.main()

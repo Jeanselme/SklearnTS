@@ -1,7 +1,7 @@
 """
     Normalize one time series given all the other
 """
-from utils.ts_transformation import Transformation
+from utils.encapsulator import Transformation
 
 class GlobalNormalizationZScore(Transformation):
 

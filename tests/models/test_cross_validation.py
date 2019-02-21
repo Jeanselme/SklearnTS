@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import pandas as pd
-from models.modelts import *
+from utils.encapsulator import Model
 from models.cross_validation import *
 from normalization.individual_norm import IndividualNormalizationZScore
 from sklearn.linear_model import LogisticRegression
@@ -13,10 +13,10 @@ class TestCrossValidation(unittest.TestCase):
         self.number_classes = 3
         self.dim = 10
         self.data = {j: pd.DataFrame(np.random.rand(np.random.randint(10, 100), self.dim)) for j in range(self.number_points)}
-        self.labels = {j: np.random.randint(self.number_classes, size=len(self.data[j])) for j in range(self.number_points)}
+        self.labels = {j: pd.Series(np.random.randint(self.number_classes, size=len(self.data[j]))) for j in range(self.number_points)}
 
     def test_ModelS(self):
-        model = ModelDictionary(LogisticRegression())
+        model = Model(LogisticRegression())
 
         n_split = 5
         split = int(self.number_points / n_split)

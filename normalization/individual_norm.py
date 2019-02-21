@@ -2,7 +2,7 @@
     Normalize data of one time series through time
     Use a given period of time preceding t and normalize the data
 """
-from utils.ts_transformation import Transformation
+from utils.encapsulator import Transformation
 
 class IndividualNormalizationZScore(Transformation):
 
