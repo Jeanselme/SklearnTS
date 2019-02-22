@@ -10,7 +10,21 @@ class Encapsulator:
 
 class Model(Encapsulator):
 
-    def fit(self, ts, tsLabels, tsWeights = None):
+    def fit(self, ts, tsLabels, tsWeights = None, balance = True):
+        # Same weights for each class
+        if tsWeights is None:
+            tsWeights = pd.Series(data = 1, index = ts.index)
+            
+        # Correct for equal weight 
+        if balance:
+            factors, total = {}, 0
+            for label in tsLabels.unique():
+                factors[label] = tsWeights[tsLabels.index[(tsLabels.values == label)]].sum()
+                total += factors[label]
+
+            for label in tsLabels.unique():
+                tsWeights.loc[tsLabels.index[(tsLabels.values == label)]] *= factors[label] / total
+
         if self.encapsulation:
             self.encapsulation.fit(ts, tsLabels, tsWeights)
         return self
