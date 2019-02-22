@@ -1,5 +1,7 @@
 import pandas as pd
 
+import pandas as pd
+
 class Encapsulator:
 
     def __init__(self, encapsulation = None):
@@ -19,11 +21,11 @@ class Model(Encapsulator):
         if balance:
             factors, total = {}, 0
             for label in tsLabels.unique():
-                factors[label] = tsWeights[tsLabels.index[(tsLabels.values == label)]].sum()
+                factors[label] = tsWeights[tsLabels == label].sum()
                 total += factors[label]
 
             for label in tsLabels.unique():
-                tsWeights.loc[tsLabels.index[(tsLabels.values == label)]] *= factors[label] / total
+                tsWeights.loc[tsLabels == label] *= factors[label] / total
 
         if self.encapsulation:
             self.encapsulation.fit(ts, tsLabels, tsWeights)
