@@ -55,7 +55,7 @@ def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = Non
     plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.))
     plt.fill_between(newx, lower, upper, color=plRoc[0].get_color(), alpha=.2)
 
-def aucEvolutionPlot(temporalListLabels, predictions, classes = None, label = "Model", newFigure = None):
+def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
     """
         Plots the evolution of the auc 
         
@@ -70,14 +70,33 @@ def aucEvolutionPlot(temporalListLabels, predictions, classes = None, label = "M
         pred_time, labels_time = flatten(pred_time, labels_time)
         fpr, tpr, _ = roc_curve(labels_time, pred_time)
         auc_time = auc(fpr, tpr)
-        wilson = 1.96 * np.sqrt(tpr * (1 - tpr)/len(predictions))
+        wilson_tpr = 1.96 * np.sqrt(tpr * (1 - tpr)/len(predictions))
+        wilson_tnr = 1.96 * np.sqrt(fpr * (1 - fpr)/len(predictions))
+
         aucs[time] = {
                         "auc": auc_time, 
-                        "lower": auc(fpr, tpr - wilson), 
-                        "upper": auc(fpr, tpr + wilson)
+                        "lower": auc(fpr, tpr - wilson_tpr), 
+                        "upper": auc(fpr, tpr + wilson_tpr), 
+
+                        "tpr": np.interp(0.001, fpr, tpr),
+                        "tpr_wilson" : np.interp(0.001, fpr, wilson_tpr),
+
+                        "tnr": np.interp(0.001, (1 - tpr)[::-1], (1 - fpr)[::-1]),
+                        "tnr_wilson" : np.interp(0.001, (1 - tpr)[::-1], wilson_tnr),
                      }
 
-    aucs = pd.DataFrame.from_dict(aucs, orient = "index")
+    return pd.DataFrame.from_dict(aucs, orient = "index")
+
+def rocEvolutionPlot(temporalListLabels, predictions, classes = None, label = "Model", newFigure = None):
+    """
+        Plots the evolution of the auc 
+        
+        Arguments:
+            temporalListLabels {List of (time, labels)*} -- Ground truth labels
+            predictions {Dict / List of labels} -- Predicitons (same format than labels in temporalListLabels)
+            classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
+    """
+    aucs = computeEvolutionRoc(temporalListLabels, predictions, classes)
 
     if newFigure is not None:
         plt.figure(newFigure)

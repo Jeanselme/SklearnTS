@@ -27,7 +27,7 @@ class TestComparison(unittest.TestCase):
         calibrationCompare([("random", self.predictions), ("perfect", self.labels)], self.labels)
 
     def test_aucEvolutionCompare(self):
-        aucEvolutionCompare([("random", self.predictions), ("perfect", self.labels)], self.temporal_labels, classes = {'+':1, '-':0})
+        rocEvolutionCompare([("random", self.predictions), ("perfect", self.labels)], self.temporal_labels, classes = {'+':1, '-':0})
 
     def test_featuresImportanceCompare(self):
         featuresImportanceCompare([("random", np.random.random(size = self.dim)), ("perfect", np.random.random(size = self.dim))], np.arange(self.dim))

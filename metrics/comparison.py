@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
-from metrics.roc import rocPlot, aucEvolutionPlot
+from metrics.roc import rocPlot, computeEvolutionRoc
 
 def rocCompare(listModels, truth, classes = None):
     """
@@ -70,7 +70,7 @@ def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
 
-def aucEvolutionCompare(listModels, temporalListLabels, classes):
+def rocEvolutionCompare(listModels, temporalListLabels, classes):
     """
         Plots the different histogram of predictions
 
@@ -79,15 +79,34 @@ def aucEvolutionCompare(listModels, temporalListLabels, classes):
             temporalListLabels {Dict {time: true labels}} -- Ground truth
             classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """ 
-    plt.figure("Evolution AUC")
+    aucs = {}
+    for (name, predictions) in listModels:
+        aucs[name] = computeEvolutionRoc(temporalListLabels, predictions, classes)
+    
+    # AUC
+    plt.figure("Evolution")
     plt.xlabel('Time before event (in minutes)')
-    plt.ylabel('AUC')
+    plt.ylabel('Evolution')
     plt.title('Evolution AUC')
     plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0.5, 0.5], 'k--', label="Random Model")
-    for (name, predictions) in listModels:
-        aucEvolutionPlot(temporalListLabels, predictions,classes, name, "Evolution AUC")
+    for name in aucs:
+        plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name]["auc"].values, label = name)
+        plt.fill_between(aucs[name].index.seconds / 60., aucs[name]["lower"], aucs[name]["upper"], color=plAuc[0].get_color(), alpha=.2)
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
+    
+    # TPR
+    for typePlot in ["tnr", "tpr"]:
+        plt.figure("Evolution {}".format(typePlot))
+        plt.xlabel('Time before event (in minutes)')
+        plt.ylabel('Evolution')
+        plt.title('Evolution {} @0.1% {}'.format(typePlot, "fnr" if typePlot == "tnr" else "fpr"))
+        plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0, 0], 'k--', label="Random Model")
+        for name in aucs:
+            plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name][typePlot].values, label = name)
+            plt.fill_between(aucs[name].index.seconds / 60., aucs[name][typePlot].values - aucs[name][typePlot + '_wilson'], aucs[name][typePlot].values + aucs[name][typePlot + '_wilson'], color=plAuc[0].get_color(), alpha=.2)
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+        plt.show()
 
 def featuresImportanceCompare(listModels, featuresNames):
     """
