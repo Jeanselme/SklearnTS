@@ -69,9 +69,10 @@ def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
         pred_time, labels_time = selection(predictions, labels, classes)
         pred_time, labels_time = flatten(pred_time, labels_time)
         fpr, tpr, _ = roc_curve(labels_time, pred_time)
+        fnr, tnr = (1 - tpr)[::-1], (1 - fpr)[::-1]
         auc_time = auc(fpr, tpr)
         wilson_tpr = 1.96 * np.sqrt(tpr * (1 - tpr)/len(predictions))
-        wilson_tnr = 1.96 * np.sqrt(fpr * (1 - fpr)/len(predictions))
+        wilson_tnr = 1.96 * np.sqrt(tnr * (1 - tnr)/len(predictions))
 
         aucs[time] = {
                         "auc": auc_time, 
@@ -81,10 +82,10 @@ def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
                         "tpr": np.interp(0.001, fpr, tpr),
                         "tpr_wilson" : np.interp(0.001, fpr, wilson_tpr),
 
-                        "tnr": np.interp(0.001, (1 - tpr)[::-1], (1 - fpr)[::-1]),
-                        "tnr_wilson" : np.interp(0.001, (1 - tpr)[::-1], wilson_tnr),
+                        "tnr": np.interp(0.001, fnr, tnr),
+                        "tnr_wilson" : np.interp(0.001, fnr, wilson_tnr),
                      }
-
+                     
     return pd.DataFrame.from_dict(aucs, orient = "index")
 
 def rocEvolutionPlot(temporalListLabels, predictions, classes = None, label = "Model", newFigure = None):
