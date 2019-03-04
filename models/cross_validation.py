@@ -30,8 +30,11 @@ def cross_validation(model, data, labels, folds, classes = None, weights = None,
             data_test = transform.transform_dict(data_test)
 
             # Because Normalization can impact labeling
-            labels_fold = {d: labels[d][data_fold[d].index] for d in labels_fold if len(data_fold[d]) > 0} 
-            weights_fold = {d: weights_fold[d][data_fold[d].index] for d in weights_fold if len(data_fold[d]) > 0} 
+            data_fold = {d: data_fold[d] for d in data_fold if len(data_fold[d]) > 0} 
+            labels_fold = {d: labels[d][data_fold[d].index] for d in data_fold if len(data_fold[d]) > 0} 
+            weights_fold = {d: weights_fold[d][data_fold[d].index] for d in data_fold if len(data_fold[d]) > 0} 
+
+            data_test = {d: data_test[d] for d in data_test if len(data_test[d]) > 0}
             labels_res.update({d: labels[d][data_test[d].index] for d in folds[k] if len(data_test[d]) > 0})
 
         model.fit_dict(data_fold, labels_fold, weights_fold)
