@@ -55,7 +55,7 @@ def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = Non
     plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.), ls = '--' if "train" in label.lower() else '-')
     plt.fill_between(newx, lower, upper, color=plRoc[0].get_color(), alpha=.2)
 
-def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
+def computeEvolutionRoc(temporalListLabels, predictions, classes = None, percentage = 0.001):
     """
         Plots the evolution of the auc 
         
@@ -63,6 +63,7 @@ def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
             temporalListLabels {List of (time, labels)*} -- Ground truth labels
             predictions {Dict / List of labels} -- Predicitons (same format than labels in temporalListLabels)
             classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
+            percentage {float} -- Evaluate the TPR and TNR at this given value of FNR and FPR
     """
     aucs = {}
     for time, labels in temporalListLabels:
@@ -79,11 +80,11 @@ def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
                         "lower": auc(fpr, tpr - wilson_tpr), 
                         "upper": auc(fpr, tpr + wilson_tpr), 
 
-                        "tpr": np.interp(0.001, fpr, tpr),
-                        "tpr_wilson" : np.interp(0.001, fpr, wilson_tpr),
+                        "tpr": np.interp(percentage, fpr, tpr),
+                        "tpr_wilson" : np.interp(percentage, fpr, wilson_tpr),
 
-                        "tnr": np.interp(0.001, fnr, tnr),
-                        "tnr_wilson" : np.interp(0.001, fnr, wilson_tnr),
+                        "tnr": np.interp(percentage, fnr, tnr),
+                        "tnr_wilson" : np.interp(percentage, fnr, wilson_tnr),
                      }
                      
     return pd.DataFrame.from_dict(aucs, orient = "index")

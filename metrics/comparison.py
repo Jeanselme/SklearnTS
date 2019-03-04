@@ -70,7 +70,7 @@ def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
 
-def rocEvolutionCompare(listModels, temporalListLabels, classes):
+def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.001):
     """
         Plots the different histogram of predictions
 
@@ -81,7 +81,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes):
     """ 
     aucs = {}
     for (name, predictions) in listModels:
-        aucs[name] = computeEvolutionRoc(temporalListLabels, predictions, classes)
+        aucs[name] = computeEvolutionRoc(temporalListLabels, predictions, classes, percentage)
     
     # AUC
     plt.figure("Evolution")
@@ -101,7 +101,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes):
         plt.figure("Evolution {}".format(typePlot))
         plt.xlabel('Time before event (in minutes)')
         plt.ylabel('Evolution')
-        plt.title('Evolution {} @0.1% {}'.format(typePlot, "fnr" if typePlot == "tnr" else "fpr"))
+        plt.title('Evolution {} @{:.2f}% {}'.format(typePlot, percentage * 100, "fnr" if typePlot == "tnr" else "fpr"))
         plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0, 0], 'k--', label="Random Model")
         for name in aucs:
             plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name][typePlot].values, label = name, ls = '--' if "train" in name.lower() else '-')
