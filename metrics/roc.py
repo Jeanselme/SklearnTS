@@ -52,7 +52,7 @@ def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = Non
     print(str_print + " +/- {:.2f}".format(np.interp(0.01, newx, wilson)))
     upper = np.minimum(y + wilson, 1)
     lower = np.maximum(y - wilson, 0)
-    plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.))
+    plRoc = plt.plot(newx, y, label=label + " ({:.2f} +/- {:.2f})".format(auc(newx, y), (auc(newx, upper) - auc(newx, lower))/2.), ls = '--' if "train" in label.lower() else '-')
     plt.fill_between(newx, lower, upper, color=plRoc[0].get_color(), alpha=.2)
 
 def computeEvolutionRoc(temporalListLabels, predictions, classes = None):
@@ -106,6 +106,6 @@ def rocEvolutionPlot(temporalListLabels, predictions, classes = None, label = "M
         plt.xlabel('Time before event (in minutes)')
         plt.ylabel('AUC')
 
-    plAuc = plt.plot(aucs.index.seconds / 60., aucs["auc"].values, label = label)
+    plAuc = plt.plot(aucs.index.seconds / 60., aucs["auc"].values, label = label, ls = '--' if "train" in label.lower() else '-')
     plt.fill_between(aucs.index.seconds / 60., aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)
 

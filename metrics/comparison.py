@@ -90,8 +90,9 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes):
     plt.title('Evolution AUC')
     plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0.5, 0.5], 'k--', label="Random Model")
     for name in aucs:
-        plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name]["auc"].values, label = name)
+        plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name]["auc"].values, label = name, ls = '--' if "train" in name.lower() else '-')
         plt.fill_between(aucs[name].index.seconds / 60., aucs[name]["lower"], aucs[name]["upper"], color=plAuc[0].get_color(), alpha=.2)
+    plt.gca().invert_xaxis()
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
     
@@ -103,12 +104,13 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes):
         plt.title('Evolution {} @0.1% {}'.format(typePlot, "fnr" if typePlot == "tnr" else "fpr"))
         plt.plot([min(temporalListLabels)[0].seconds / 60., max(temporalListLabels)[0].seconds / 60.], [0, 0], 'k--', label="Random Model")
         for name in aucs:
-            plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name][typePlot].values, label = name)
+            plAuc = plt.plot(aucs[name].index.seconds / 60., aucs[name][typePlot].values, label = name, ls = '--' if "train" in name.lower() else '-')
             plt.fill_between(aucs[name].index.seconds / 60., aucs[name][typePlot].values - aucs[name][typePlot + '_wilson'], aucs[name][typePlot].values + aucs[name][typePlot + '_wilson'], color=plAuc[0].get_color(), alpha=.2)
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+        plt.gca().invert_xaxis()
         plt.show()
 
-def featuresImportanceCompare(listModels, featuresNames):
+def featuresImportanceCompare(listModels, featuresNames, top = None):
     """
         Plots the importance that each model assign to each features
         
@@ -116,17 +118,19 @@ def featuresImportanceCompare(listModels, featuresNames):
             listModels {List of (name, features_weights)*} -- Models to display
             featuresNames {str list} -- Same size than features_weights
     """
-    plt.figure("Features importance", figsize=(8, max(4.8, len(featuresNames) / 5)))
-    plt.xlabel('Weights')
-    plt.ylabel('Features')
-    plt.title('Features importance')
     weights_model = {}
     for (name, weights) in listModels:
         weights_model[name] = {f: w for w, f in zip(weights / np.max(np.abs(weights)), featuresNames)}
     weights_model = pd.DataFrame.from_dict(weights_model)
 
     # Sort by mean value of features
-    weights_model = weights_model.reindex(weights_model.mean(axis = "columns").sort_values().index, axis = 0)
+    weights_model = weights_model.reindex(weights_model.abs().mean(axis = "columns").sort_values().index, axis = 0)
+    if top is not None:
+        weights_model = weights_model.iloc[-top:]
+    plt.figure("Features importance", figsize=(8, max(4.8, len(weights_model) / 5)))
+    plt.xlabel('Weights')
+    plt.ylabel('Features')
+    plt.title('Features importance')
     weights_model.plot.barh(ax = plt.gca())
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.show()
