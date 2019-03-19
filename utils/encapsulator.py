@@ -61,12 +61,14 @@ class Transformation(Encapsulator):
 
     def transform(self, ts):
         if self.encapsulation:
-            return pd.DataFrame(self.encapsulation.transform(ts), index = ts.index)
+            transformed = self.encapsulation.transform(ts)
+            return pd.DataFrame(transformed, index = ts.index[-len(transformed):])
         raise Exception("Not implemented")
 
     def fit_transform(self, ts):
         if self.encapsulation:
-            return pd.DataFrame(self.encapsulation.fit_transform(ts), index = ts.index)
+            transformed = self.encapsulation.transform(ts)
+            return pd.DataFrame(self.encapsulation.fit_transform(ts), index = ts.index[-len(transformed):])
         else:
             self.fit(ts)
             return self.transform(ts)
