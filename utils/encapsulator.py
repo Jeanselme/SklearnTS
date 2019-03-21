@@ -70,7 +70,6 @@ class Transformation(Encapsulator):
             transformed = self.encapsulation.fit_transform(ts, tsLabels)
             return pd.DataFrame(transformed, index = ts.index[-len(transformed):])
         else:
-            print(self)
             self.fit(ts, tsLabels)
             return self.transform(ts)
 
