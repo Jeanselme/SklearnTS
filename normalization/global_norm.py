@@ -5,7 +5,7 @@ from utils.encapsulator import Transformation
 
 class GlobalNormalizationZScore(Transformation):
 
-    def fit(self, ts):
+    def fit(self, ts, tsLabels = None):
         self.mean = ts.mean(axis = "rows")
         self.std = ts.std(axis = "rows")
         self.std[self.std == 0] = 1 

@@ -26,7 +26,7 @@ def cross_validation(model, data, labels, folds, classes = None, weights = None,
         data_test = {d: data[d] for d in folds[k]}
         
         if transform is not None:
-            data_fold = transform.fit_transform_dict(data_fold)
+            data_fold = transform.fit_transform_dict(data_fold, labels_fold)
             data_test = transform.transform_dict(data_test)
 
             # Because Normalization can impact labeling

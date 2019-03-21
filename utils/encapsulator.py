@@ -54,9 +54,9 @@ class Transformation(Encapsulator):
         Object in order to encapsulate Sklearn model and transformation
     """
 
-    def fit(self, ts):
+    def fit(self, ts, tsLabels = None):
         if self.encapsulation:
-            self.encapsulation.fit(ts)
+            self.encapsulation.fit(ts, tsLabels)
         return self
 
     def transform(self, ts):
@@ -65,16 +65,18 @@ class Transformation(Encapsulator):
             return pd.DataFrame(transformed, index = ts.index[-len(transformed):])
         raise Exception("Not implemented")
 
-    def fit_transform(self, ts):
+    def fit_transform(self, ts, tsLabels = None):
         if self.encapsulation:
-            transformed = self.encapsulation.transform(ts)
-            return pd.DataFrame(self.encapsulation.fit_transform(ts), index = ts.index[-len(transformed):])
+            transformed = self.encapsulation.fit_transform(ts, tsLabels)
+            return pd.DataFrame(transformed, index = ts.index[-len(transformed):])
         else:
-            self.fit(ts)
+            print(self)
+            self.fit(ts, tsLabels)
             return self.transform(ts)
 
-    def fit_dict(self, tsDict):
-        return self.fit(pd.concat([tsDict[ts] for ts in tsDict]))
+    def fit_dict(self, tsDict, tsLabelsDict = None):
+        return self.fit(pd.concat([tsDict[ts] for ts in tsDict]), 
+            pd.concat([tsLabelsDict[ts] for ts in tsDict]) if tsLabelsDict else None)
 
     def transform_dict(self, tsDict):
         if isinstance(tsDict, dict):
@@ -84,8 +86,8 @@ class Transformation(Encapsulator):
         else:
             return self.transform(pd.DataFrame(tsDict))
 
-    def fit_transform_dict(self, tsDict):
-        self.fit_dict(tsDict)
+    def fit_transform_dict(self, tsDict, tsLabelsDict = None):
+        self.fit_dict(tsDict, tsLabelsDict)
         return self.transform_dict(tsDict)
 
 class Accumulator(Transformation):
@@ -101,8 +103,8 @@ class Accumulator(Transformation):
 
         self.transformationList = transformationList
 
-    def fit(self, ts):
-        self.fit_transform(ts)
+    def fit(self, ts, tsLabels = None):
+        self.fit_transform(ts, tsLabels)
         return self
 
     def transform(self, ts):
@@ -110,7 +112,7 @@ class Accumulator(Transformation):
             ts = transformation.transform(ts)
         return ts
 
-    def fit_transform(self, ts):
+    def fit_transform(self, ts, tsLabels = None):
         for transformation in self.transformationList:
-            ts = transformation.fit_transform(ts)
+            ts = transformation.fit_transform(ts, tsLabels)
         return ts
