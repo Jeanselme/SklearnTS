@@ -1,7 +1,5 @@
 import pandas as pd
 
-import pandas as pd
-
 class Encapsulator:
 
     def __init__(self, encapsulation = None):
