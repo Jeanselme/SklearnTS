@@ -65,6 +65,7 @@ def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     plt.xlabel('Mean Predicted Value')
     plt.ylabel('Fraction Positive')
     plt.title('Calibration')
+    plt.plot(np.linspace(0, 1, 100), np.linspace(0, 1, 100), 'k--', label="Random")
     for (name, predictions) in listModels:
         calibrationPlot(predictions, truth, classes, name, "Calibration", n_bins)
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
