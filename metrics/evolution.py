@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from SklearnTS.utils.ts_transformation import pushZeroTime, computeMeanStdCount
+from utils.ts_transformation import pushZeroTime, computeMeanStdCount
 
 def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, colors = {}):
     """
@@ -75,6 +75,45 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
     twin.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
     twin.set_ylabel('Number Stays')
     
+
+def spaghettiPlot(predictions, truth, classes, invert = True, colors = {}):
+    """
+        Display the spaghettis of the different time series
+
+        Arguments:
+            predictions {Dict / List} -- Label predictions
+            truth {Dict / List} -- Ground truth (one label per time series)
+            classes {Dict} -- Classes to consider to plot (key: Name to display, Value: label)
+        
+        Keyword Arguments:
+            invert {bool} -- Invert time axis (time before event)
+            colors {Dict} -- Same keys than classes
+    """
+    # Creates the subplots
+    fig, axes = plt.subplots(len(classes) + 1, 1, sharex = True, sharey = True, squeeze = False, figsize = (8, 10))
+    axes[-1,0].set_title("All time series")
+
+    for i, c in enumerate(classes):
+        axes[i,0].set_title(c)
+
+        # Select time series of the class
+        patients = [pushZeroTime(predictions[p], invert = invert) for p in predictions if classes[c] == truth[p]]
+        for patient in patients:
+            axes[i, 0].plot(patient.index.total_seconds() / 3600., patient.values, alpha = 0.1)
+            axes[-1, 0].plot(patient.index.total_seconds() / 3600., patient.values, alpha = 0.1, color = colors[c] if c in colors else None)
+
+    # Create legends 
+    if invert:
+        axes[0,0].invert_xaxis()
+
+    fig.add_subplot(111, frameon = False)
+    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+    if invert:
+        plt.xlabel('Time to event (in hour)')
+    else:
+        plt.xlabel('Time after event (in hour)')
+    plt.ylabel('Predictions')
     plt.grid(alpha = .2)
 
     return fig, axes
+
