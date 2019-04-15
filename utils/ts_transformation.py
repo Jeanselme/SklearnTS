@@ -15,10 +15,10 @@ def pushZeroTime(ts, deep = False, invert = True):
     """
     res = ts.copy(deep)
     if invert:
-        res.index =  max(ts.index) - ts.index
+        res.index =  ts.index.max() - ts.index
     else:
-        res.index =  ts.index - min(ts.index) 
-    return res
+        res.index =  ts.index - ts.index.min() 
+    return res.sort_index()
 
 def computeMeanStdCount(tsList):
     """
