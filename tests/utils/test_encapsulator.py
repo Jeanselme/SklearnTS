@@ -21,9 +21,14 @@ class TestEncapsulator(unittest.TestCase):
         model.fit_dict(self.data, self.labels)
         predictions = model.predict_dict(self.data)
         self.assertEqual(len(predictions), len(self.data))
+
+        predictions_proba = model.predict_proba_dict(self.data)
+        self.assertEqual(len(predictions), len(self.data))
         
         for d in self.data:
             self.assertEqual(len(self.labels[d]), len(predictions[d]))
+            self.assertEqual(len(self.labels[d]), predictions_proba[d].shape[0])
+            self.assertEqual(self.number_classes, predictions_proba[d].shape[1])
 
     def test_Transformation(self):
         pca = Transformation(PCA(2))

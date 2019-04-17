@@ -29,6 +29,11 @@ class Model(Encapsulator):
             self.encapsulation.fit(ts, tsLabels, tsWeights)
         return self
 
+    def predict_proba(self, ts):
+        if self.encapsulation:
+            return pd.DataFrame(self.encapsulation.predict_proba(ts), index = ts.index)
+        raise Exception("Not implemented")
+
     def predict(self, ts):
         if self.encapsulation:
             return pd.DataFrame(self.encapsulation.predict(ts), index = ts.index)
@@ -46,6 +51,14 @@ class Model(Encapsulator):
             return self.predict(tsDict)
         else:
             return self.predict(pd.DataFrame(tsDict))
+    
+    def predict_proba_dict(self, tsDict):
+        if isinstance(tsDict, dict):
+            return {d: self.predict_proba_dict(tsDict[d]) for d in tsDict}
+        elif isinstance(tsDict, pd.DataFrame):
+            return self.predict_proba(tsDict)
+        else:
+            return self.predict_proba(pd.DataFrame(tsDict))
 
 class Transformation(Encapsulator):
     """
