@@ -75,6 +75,7 @@ def evolutionPlot(predictions, truth, classes, clusters = None, invert = True, c
     twin.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
     twin.set_ylabel('Number Stays')
     
+    return fig, axes
 
 def spaghettiPlot(predictions, truth, classes, invert = True, colors = {}):
     """
