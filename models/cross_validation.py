@@ -1,7 +1,7 @@
 import pandas as pd
 from utils.utils import flatten, selection
 
-def cross_validation(model, data, labels, folds, classes = None, weights = None, transform = None):
+def cross_validation(model, data, labels, folds, classes = None, weights = None, transform = None, proba = True):
     """
         Computes the cross valdiation on the data
         Given the folds indicated in folds
@@ -38,5 +38,10 @@ def cross_validation(model, data, labels, folds, classes = None, weights = None,
             labels_res.update({d: labels[d][data_test[d].index] for d in folds[k] if len(data_test[d]) > 0})
 
         model.fit_dict(data_fold, labels_fold, weights_fold)
-        predictions.update(model.predict_dict(data_test))
+
+        if proba:
+            predictions.update(model.predict_proba_dict(data_test))
+        else:
+            predictions.update(model.predict_dict(data_test))
+
     return predictions, labels_res
