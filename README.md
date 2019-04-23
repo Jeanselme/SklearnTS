@@ -27,3 +27,6 @@ Unittests and example of notebooks for usecase
 
 ### Utils
 All other functions shared through all previous folders
+
+## How to use it ?
+A simple example is provided in 'Example.ipynb' with a cross validation on the generated dataset obtained with the first part of the script.

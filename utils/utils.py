@@ -55,6 +55,23 @@ def selection(data, labels, classes = None):
 
     return data, labels
 
+def extractLabels(data, label_column):
+    """
+        Extracts the labels from the data
+        
+        Arguments:
+            data {Dict/List of times series} -- Time series
+            label_column {str} -- Name of the column to extract
+    """
+    if isinstance(data, dict):
+        labels = {d: data[d][label_column] for d in data}
+        data = {d: data[d][[c for c in data[d].columns if c != label_column]] for d in data}
+    else:
+        labels = data[label_column]
+        data = data[[c for c in data.columns if c != label_column]]
+
+    return data, labels
+
 def discretization(data, threshold):
     if isinstance(data, dict):
         data = {d: discretization(data[d], threshold) for d in data}

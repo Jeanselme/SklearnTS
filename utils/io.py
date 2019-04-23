@@ -18,7 +18,7 @@ def readParallel(directory, processor, files = None, **args):
     if files is None:
         files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and '.csv' in f]
     res = Parallel(n_jobs = processor)(delayed(pd.read_csv)(os.path.join(directory, f), **args) for f in files)
-    return {f[:f.index('.csv')]: res[i].sort_index() for i, f in enumerate(files)}
+    return {f[:f.rindex('.')]: res[i].sort_index() for i, f in enumerate(files)}
 
 def writeParallel(timeseries, directory, processor, **args):
     """
