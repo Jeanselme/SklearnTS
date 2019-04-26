@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import brier_score_loss
 from sklearn.calibration import calibration_curve
 
 from utils.utils import flatten, selection
@@ -35,4 +36,4 @@ def calibrationPlot(predictions, truth, classes = None, label = "Model", newFigu
         plt.title('Calibration')
 
     p = plt.plot(mean_predicted_value, fraction_of_positives, alpha = 0.5, ls=':')
-    plt.scatter(mean_predicted_value, fraction_of_positives, s = bin_sums, label = label, color = p[0].get_color(), alpha = 0.5)
+    plt.scatter(mean_predicted_value, fraction_of_positives, s = bin_sums, label = label + " ({:.2f})".format(brier_score_loss(truth, predictions)), color = p[0].get_color(), alpha = 0.5)
