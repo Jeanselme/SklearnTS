@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def check_size(data, labels):
     """
@@ -40,6 +41,12 @@ def selection(data, labels, classes = None):
         classes {Dict/List labels} -- Classes to select
     """
     if classes is None:
+        if isinstance(data, dict):
+            for d in data:
+                data[d], labels[d] = selection(data[d], labels[d])
+        elif isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
+            index = data.index.intersection(labels.index)
+            data, labels = data.loc[index], labels.loc[index]
         return data, labels
 
     if isinstance(classes, dict):
