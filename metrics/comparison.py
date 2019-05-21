@@ -32,6 +32,7 @@ def rocCompare(listModels, truth, classes = None):
             plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
             if log:
                 plt.xscale('log')
+            plt.ylim(-0.1, 1.1)
             plt.show()
 
 def histCompare(listModels, truth, classes = None, splitPosNeg = False, kde = False):
@@ -95,6 +96,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.
         plt.fill_between(aucs[name].index.seconds / 60., aucs[name]["lower"], aucs[name]["upper"], color=plAuc[0].get_color(), alpha=.2)
     plt.gca().invert_xaxis()
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.ylim(0.4, 1.1)
     plt.show()
     
     # TPR
@@ -109,6 +111,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.
             plt.fill_between(aucs[name].index.seconds / 60., aucs[name][typePlot].values - aucs[name][typePlot + '_wilson'], aucs[name][typePlot].values + aucs[name][typePlot + '_wilson'], color=plAuc[0].get_color(), alpha=.2)
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
         plt.gca().invert_xaxis()
+        plt.ylim(-0.1, 1.1)
         plt.show()
 
 def featuresImportanceCompare(listModels, featuresNames, top = None):
