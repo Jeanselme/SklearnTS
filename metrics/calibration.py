@@ -21,7 +21,7 @@ def calibrationPlot(predictions, truth, classes = None, label = "Model", newFigu
     """
     predictions, truth = selection(predictions, truth, classes)
     predictions, truth = flatten(predictions, truth)
-    predictions = ((predictions - predictions.min()) / (predictions.max() - predictions.min()))
+    predictions = ((predictions - predictions.min()) / (predictions.max() - predictions.min())).flatten()
     fraction_of_positives, mean_predicted_value = calibration_curve(truth, predictions, n_bins = n_bins)
     bins = np.linspace(0., 1. + 1e-8, n_bins + 1)
     binids = np.digitize(predictions, bins) - 1
