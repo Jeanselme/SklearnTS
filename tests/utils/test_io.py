@@ -22,6 +22,12 @@ class TestIo(unittest.TestCase):
         for d in data:
             self.assertEqual(len(data[d]), len(self.data[d]))
 
+    def test_extractParallel(self):
+        writeParallel(self.data, self.path, 3)
+        data = extractParallel(self.path, lambda x: x.pow(2), 3)
+        self.assertEqual(len(data), len(self.data))
+        for d in data:
+            self.assertEqual(len(data[d]), len(self.data[d]))
 
 if __name__ == '__main__':
     unittest.main()
