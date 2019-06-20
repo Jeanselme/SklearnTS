@@ -72,7 +72,7 @@ class Transformation(Encapsulator):
 
     def transform(self, ts):
         if self.encapsulation:
-            transformed = self.encapsulation.transform(ts)
+            transformed = self.encapsulation.transform(ts.copy())
             return pd.DataFrame(transformed, index = ts.index[-len(transformed):])
         raise Exception("Not implemented")
 
