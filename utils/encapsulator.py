@@ -10,7 +10,7 @@ class Encapsulator:
 
 class Model(Encapsulator):
 
-    def fit(self, ts, tsLabels, tsWeights = None, balance = True):
+    def fit(self, ts, tsLabels, tsWeights = None, balance = False):
         # Same weights for each class
         if tsWeights is None:
             tsWeights = pd.Series(data = 1, index = ts.index)
@@ -19,7 +19,7 @@ class Model(Encapsulator):
         if balance:
             factors, total = {}, 0
             for label in tsLabels.unique():
-                factors[label] = tsWeights[tsLabels == label].sum()
+                factors[label] = tsWeights.loc[tsLabels == label].sum()
                 total += factors[label]
 
             for label in tsLabels.unique():
