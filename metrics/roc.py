@@ -1,9 +1,27 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.metrics import auc, roc_curve
+from sklearn.metrics import auc, roc_curve, roc_auc_score
 
 from utils.utils import flatten, selection
+
+def aucCompute(predictions, truth, classes = None):
+    """
+        Computes AUC of the given predictions
+        
+        Arguments:
+            predictions {Dict / List} -- Label predictions
+            truth {Dict / List} -- Ground truth
+        
+        Keyword Arguments:
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
+    
+        Returns:
+            float -- Estimation by pooling of auc
+    """
+    predictions, truth = selection(predictions, truth, classes)
+    predictions, truth = flatten(predictions, truth)
+    return roc_auc_score(truth, predictions)
 
 def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = None, reverse = False):
     """
