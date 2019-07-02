@@ -14,7 +14,7 @@ class TestIndividual(unittest.TestCase):
             self.data[i] = pd.DataFrame(data, index = pd.to_datetime(np.arange(len(data)), unit = "s"))
 
     def test_IndividualNormalizationZScore(self):
-        norm = IndividualNormalizationZScore(window = '3s') # Normalization given last 3 minutes
+        norm = IndividualNormalizationZScore(window = '3s') # Normalization given last 3 seconds
 
         norm.fit(self.data)
         resT = norm.transform_dict(self.data)
@@ -23,6 +23,17 @@ class TestIndividual(unittest.TestCase):
         for i in range(self.number_points):
             self.assertEqual(resT[i].index[0].second, 1)
             self.assertEqual(resT[i].index[-1].second, len(self.data[i]) - 1)
+            self.assertListEqual(resT[i].values.tolist(), resFT[i].values.tolist())
+
+    def test_IndividualNormalizationZScoreRobust(self):
+        norm = IndividualNormalizationZScoreRobust(window = '3s') # Normalization given last 3 seconds
+
+        norm.fit(self.data)
+        resT = norm.transform_dict(self.data)
+        resFT = norm.fit_transform_dict(self.data)
+
+        for i in range(self.number_points):
+            self.assertEqual(resT[i].index[0].second, 1)
             self.assertListEqual(resT[i].values.tolist(), resFT[i].values.tolist())
 
 if __name__ == '__main__':

@@ -25,5 +25,17 @@ class TestGlobal(unittest.TestCase):
             self.assertEqual(resT[i].index[-1].second, len(self.data[i]) - 1)
             self.assertListEqual(resT[i].values.tolist(), resFT[i].values.tolist())
 
+    def test_GlobalNormalizationZScoreRobust(self):
+        norm = GlobalNormalizationZScoreRobust() # Normalization given last 3 minutes
+
+        norm.fit_dict(self.data)
+        resT = norm.transform_dict(self.data)
+        resFT = norm.fit_transform_dict(self.data)
+
+        for i in range(self.number_points):
+            self.assertEqual(resT[i].index[0].second, 0)
+            self.assertEqual(resT[i].index[-1].second, len(self.data[i]) - 1)
+            self.assertListEqual(resT[i].values.tolist(), resFT[i].values.tolist())
+
 if __name__ == '__main__':
     unittest.main()
