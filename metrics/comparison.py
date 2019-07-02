@@ -6,7 +6,7 @@ from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
 from metrics.roc import rocPlot, computeEvolutionRoc
 
-def rocCompare(listModels, truth, classes = None):
+def rocCompare(listModels, truth, classes = None, **arg_roc):
     """
         Plots the different roc for different models
         
@@ -28,7 +28,7 @@ def rocCompare(listModels, truth, classes = None):
                 plt.ylabel('True positive rate')
                 plt.title('ROC curve')
             for (name, predictions) in listModels:
-                rocPlot(predictions, truth, classes, name, "Roc", reverse)
+                rocPlot(predictions, truth, classes, name, "Roc", reverse, **arg_roc)
             plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
             if log:
                 plt.xscale('log')

@@ -18,7 +18,7 @@ class TestComparison(unittest.TestCase):
                 labels[j][-i.seconds:] = -1
 
     def test_rocCompare(self):
-        rocCompare([("random", self.predictions), ("perfect", self.labels)], self.labels)
+        rocCompare([("random", self.predictions), ("perfect", self.labels)], self.labels, percentage = 0.5)
 
     def test_histCompare(self):
         histCompare([("random", self.predictions), ("perfect", self.labels)], self.labels)

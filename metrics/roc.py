@@ -23,7 +23,7 @@ def aucCompute(predictions, truth, classes = None):
     predictions, truth = flatten(predictions, truth)
     return roc_auc_score(truth, predictions)
 
-def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = None, reverse = False):
+def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = None, reverse = False, percentage = None):
     """
         Computes the roc with confidence bounds for the given model
         
@@ -44,11 +44,15 @@ def rocPlot(predictions, truth, classes = None, label = "Model", newFigure = Non
         x, y = 1 - global_tpr, 1 - global_fpr # FNR, TNR
         x, y = x[::-1], y[::-1]
         minx = 1. / np.sum(truth == 1)
-        str_print = "TNR @{:.2f}% FNR : {:.2f}".format(minx*100, np.interp(minx, x, y))
+        if percentage is None:
+            percentage = minx
+        str_print = "TNR @{:.2f}% FNR : {:.2f}".format(percentage*100, np.interp(percentage, x, y))
     else:
         x, y = global_fpr, global_tpr
         minx = 1. / np.sum(truth == 0)
-        str_print = "TPR @{:.2f}% FPR : {:.2f}".format(minx*100, np.interp(minx, x, y))
+        if percentage is None:
+            percentage = minx
+        str_print = "TPR @{:.2f}% FPR : {:.2f}".format(percentage*100, np.interp(percentage, x, y))
 
             
     if newFigure is not None:
