@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from joblib import Parallel, delayed
 
-def readParallel(directory, processor, files = None, **args):
+def readParallel(directory, processor, files = None, read_function = pd.read_csv, **args):
     """
         Reads files located in the given directory in parallel
         
@@ -17,10 +17,10 @@ def readParallel(directory, processor, files = None, **args):
     """
     if files is None:
         files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and '.csv' in f]
-    res = Parallel(n_jobs = processor)(delayed(pd.read_csv)(os.path.join(directory, f), **args) for f in files)
+    res = Parallel(n_jobs = processor)(delayed(read_function)(os.path.join(directory, f), **args) for f in files)
     return {f[:f.rindex('.')]: res[i].sort_index() for i, f in enumerate(files)}
 
-def extractParallel(directory, feature_function, processor, files = None, features_args = {}, reading_args = {}):
+def extractParallel(directory, feature_function, processor, files = None, features_args = {}, read_function = pd.read_csv, reading_args = {}):
     """
         Reads files located in the given directory 
         And applies the features extraction in parallel
@@ -38,7 +38,7 @@ def extractParallel(directory, feature_function, processor, files = None, featur
     """
     if files is None:
         files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and '.csv' in f]
-    res = Parallel(n_jobs = processor)(delayed(lambda path: feature_function(pd.read_csv(path, **reading_args), **features_args))(os.path.join(directory, f)) for f in files)
+    res = Parallel(n_jobs = processor)(delayed(lambda path: feature_function(read_function(path, **reading_args), **features_args))(os.path.join(directory, f)) for f in files)
     return {f[:f.rindex('.')]: res[i].sort_index() for i, f in enumerate(files)}
 
 def writeParallel(timeseries, directory, processor, **args):
