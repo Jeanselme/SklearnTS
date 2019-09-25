@@ -10,23 +10,9 @@ class Encapsulator:
 
 class Model(Encapsulator):
 
-    def fit(self, ts, tsLabels, tsWeights = None, balance = False):
-        # Same weights for each class
-        if tsWeights is None:
-            tsWeights = pd.Series(data = 1, index = ts.index)
-            
-        # Correct for equal weight 
-        if balance:
-            factors, total = {}, 0
-            for label in tsLabels.unique():
-                factors[label] = tsWeights.loc[tsLabels == label].sum()
-                total += factors[label]
-
-            for label in tsLabels.unique():
-                tsWeights.loc[tsLabels == label] *= factors[label] / total
-
-        if self.encapsulation:
-            self.encapsulation.fit(ts, tsLabels, tsWeights)
+    def fit(self, ts, tsLabels, **params):
+        if self.encapsulation is not None:
+            self.encapsulation.fit(ts, tsLabels, **params)
         return self
 
     def predict_proba(self, ts):
@@ -39,10 +25,9 @@ class Model(Encapsulator):
             return pd.DataFrame(self.encapsulation.predict(ts), index = ts.index)
         raise Exception("Not implemented")
 
-    def fit_dict(self, tsDict, tsLabelsDict, tsWeightsDict = None):
+    def fit_dict(self, tsDict, tsLabelsDict, **params):
         keys = list(tsDict.keys())
-        return self.fit(pd.concat([tsDict[ts] for ts in keys]), pd.concat([tsLabelsDict[ts] for ts in keys]),
-                pd.concat([tsWeightsDict[ts] for ts in keys]) if tsWeightsDict is not None else None)
+        return self.fit(pd.concat([tsDict[ts] for ts in keys]), pd.concat([tsLabelsDict[ts] for ts in keys]), **params)
 
     def predict_dict(self, tsDict):
         if isinstance(tsDict, dict):
