@@ -129,6 +129,6 @@ def rocEvolutionPlot(temporalListLabels, predictions, classes = None, label = "M
         plt.xlabel('Time before event (in minutes)')
         plt.ylabel('AUC')
 
-    plAuc = plt.plot(aucs.index.seconds / 60., aucs["auc"].values, label = label, ls = '--' if "train" in label.lower() else '-')
-    plt.fill_between(aucs.index.seconds / 60., aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)
+    plAuc = plt.plot(aucs.index.total_seconds() / 60., aucs["auc"].values, label = label, ls = '--' if "train" in label.lower() else '-')
+    plt.fill_between(aucs.index.total_seconds() / 60., aucs["lower"], aucs["upper"], color=plAuc[0].get_color(), alpha=.2)
 
