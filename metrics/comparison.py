@@ -32,6 +32,7 @@ def rocCompare(listModels, truth, classes = None, **arg_roc):
             plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
             if log:
                 plt.xscale('log')
+            plt.grid(alpha = 0.3)
             plt.ylim(-0.1, 1.1)
             plt.show()
 
@@ -70,6 +71,7 @@ def calibrationCompare(listModels, truth, classes = None, n_bins = 5):
     for (name, predictions) in listModels:
         calibrationPlot(predictions, truth, classes, name, "Calibration", n_bins)
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.grid(alpha = 0.3)
     plt.show()
 
 def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.001):
@@ -97,6 +99,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.
     plt.gca().invert_xaxis()
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.ylim(0.4, 1.1)
+    plt.grid(alpha = 0.3)
     plt.show()
     
     # TPR
@@ -112,6 +115,7 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
         plt.gca().invert_xaxis()
         plt.ylim(-0.1, 1.1)
+        plt.grid(alpha = 0.3)
         plt.show()
 
 def featuresImportanceCompare(listModels, featuresNames, top = None):
