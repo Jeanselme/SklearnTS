@@ -32,5 +32,11 @@ class TestComparison(unittest.TestCase):
     def test_featuresImportanceCompare(self):
         featuresImportanceCompare([("random", np.random.random(size = self.dim)), ("perfect", np.random.random(size = self.dim))], np.arange(self.dim))
 
+    def test_prEvolutionCompare(self):
+        prEvolutionCompare([("random", self.predictions), ("perfect", self.labels)], self.temporal_labels, classes = {'+':1, '-':0})
+
+    def test_prCompare(self):
+        prCompare([("random", self.predictions), ("perfect", self.labels)], self.labels)
+
 if __name__ == '__main__':
     unittest.main()

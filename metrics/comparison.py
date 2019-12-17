@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from metrics.histogram import histPlot
 from metrics.calibration import calibrationPlot
 from metrics.roc import rocPlot, computeEvolutionRoc
+from metrics.precision_recall import aprEvolutionPlot, precisionRecallPlot
 
 def rocCompare(listModels, truth, classes = None, **arg_roc):
     """
@@ -35,6 +36,26 @@ def rocCompare(listModels, truth, classes = None, **arg_roc):
             plt.grid(alpha = 0.3)
             plt.ylim(-0.1, 1.1)
             plt.show()
+
+def prCompare(listModels, truth, classes = None):
+    """
+        Plots the different precision recall for different models
+        
+        Arguments:
+            listModels {List of (name, predictions)*} -- Models to display
+            truth {Dict / List of true labels} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
+    """
+    plt.figure("Precision Recall")
+    plt.figure("Evolution AUC")
+    plt.xlabel('Time before event (in minutes)')
+    plt.ylabel('AUC')
+    for (name, predictions) in listModels:
+        precisionRecallPlot(predictions, truth, classes, name, "Precision Recall")
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.grid(alpha = 0.3)
+    plt.ylim(-0.1, 1.1)
+    plt.show()
 
 def histCompare(listModels, truth, classes = None, splitPosNeg = False, kde = False):
     """
@@ -117,6 +138,27 @@ def rocEvolutionCompare(listModels, temporalListLabels, classes, percentage = 0.
         plt.ylim(-0.1, 1.1)
         plt.grid(alpha = 0.3)
         plt.show()
+
+def prEvolutionCompare(listModels, temporalListLabels, classes):
+    """
+        Plots the different histogram of predictions
+
+        Arguments:
+            listModels {List of (name, predictions)*} -- Models to display
+            temporalListLabels {Dict {time: true labels}} -- Ground truth
+            classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
+    """ 
+    plt.figure("Evolution")
+    plt.xlabel('Time before event (in minutes)')
+    plt.ylabel('Evolution')
+    plt.title('Evolution APR')
+    for (name, predictions) in listModels:
+        aprEvolutionPlot(temporalListLabels, predictions, classes, name, "Evolution")
+    plt.gca().invert_xaxis()
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
+    plt.ylim(0.4, 1.1)
+    plt.grid(alpha = 0.3)
+    plt.show()
 
 def featuresImportanceCompare(listModels, featuresNames, top = None):
     """
