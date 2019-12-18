@@ -47,9 +47,6 @@ def prCompare(listModels, truth, classes = None):
             classes {Dict "+":int, "-":int} -- Classes to consider to plot {Default None ie {+":1, "-":0}}
     """
     plt.figure("Precision Recall")
-    plt.figure("Evolution AUC")
-    plt.xlabel('Time before event (in minutes)')
-    plt.ylabel('AUC')
     for (name, predictions) in listModels:
         precisionRecallPlot(predictions, truth, classes, name, "Precision Recall")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
