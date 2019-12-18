@@ -153,7 +153,7 @@ def prEvolutionCompare(listModels, temporalListLabels, classes):
         aprEvolutionPlot(temporalListLabels, predictions, classes, name, "Evolution")
     plt.gca().invert_xaxis()
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
-    plt.ylim(0.4, 1.1)
+    plt.ylim(-0.1, 1.1)
     plt.grid(alpha = 0.3)
     plt.show()
 
