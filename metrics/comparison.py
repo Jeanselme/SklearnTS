@@ -51,6 +51,9 @@ def prCompare(listModels, truth, classes = None):
         precisionRecallPlot(predictions, truth, classes, name, "Precision Recall")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15))
     plt.grid(alpha = 0.3)
+    plt.xlabel('Precision')
+    plt.ylabel('Recall')
+    plt.xlim(-0.1, 1.1)
     plt.ylim(-0.1, 1.1)
     plt.show()
 
