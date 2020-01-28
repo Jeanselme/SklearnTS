@@ -29,6 +29,10 @@ def flatten(data, labels):
         patients = list(data.keys())
         data = np.concatenate([np.array(data[p]).reshape((len(data[p]), -1)) for p in patients])
         labels = np.concatenate([np.array(labels[p]) for p in patients])
+    if isinstance(data, pd.Series):
+        data = data.values
+    if isinstance(labels, pd.Series):
+        labels = labels.values
     return data, labels
 
 def selection(data, labels, classes = None):
