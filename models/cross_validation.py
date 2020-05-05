@@ -19,7 +19,7 @@ def cross_validation(model, data, labels, folds, classes = None, transform = Non
     """
     predictions, labels_res = {}, labels.copy()
     for k in folds:
-        data_fold, labels_fold = selection({d: data[d] for d in data if d not in folds[k]}, {d: labels[d] for d in data if d not in folds[k]}, classes)
+        data_fold, labels_fold = selection({d: data[d].copy() for d in data if d not in folds[k]}, {d: labels[d].copy() for d in data if d not in folds[k]}, classes)
         data_test = {d: data[d] for d in folds[k]}
         
         if transform is not None:
