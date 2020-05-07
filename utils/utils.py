@@ -46,25 +46,28 @@ def selection(data, labels, classes = None):
     """
     if classes is None:
         if isinstance(data, dict):
+            data_res, labels_res = {}, {}
             for d in data:
-                data[d], labels[d] = selection(data[d], labels[d])
+                data_res[d], labels_res[d] = selection(data[d], labels[d])
         elif isinstance(data, pd.DataFrame) or isinstance(data, pd.Series):
             index = data.index.intersection(labels.index)
-            data, labels = data.loc[index], labels.loc[index]
-        return data, labels
+            data_res, labels_res = data.loc[index].copy(), labels.loc[index].copy()
+        else:
+            data_res, labels_res = data.copy(), labels.copy()
+        return data_res, labels_res
 
     if isinstance(classes, dict):
         classes = [classes[c] for c in classes]
 
     if isinstance(data, dict):
         check_size(data, labels)
-        data = {d: data[d][np.isin(labels[d], classes)] for d in data if np.any(np.isin(labels[d], classes))}
-        labels = {d: labels[d][np.isin(labels[d], classes)] for d in labels if np.any(np.isin(labels[d], classes))}
+        data_res = {d: data[d][np.isin(labels[d], classes)] for d in data if np.any(np.isin(labels[d], classes))}
+        labels_res = {d: labels[d][np.isin(labels[d], classes)] for d in labels if np.any(np.isin(labels[d], classes))}
     else:
-        data = data[np.isin(labels, classes)]
-        labels = labels[np.isin(labels, classes)]
+        data_res = data[np.isin(labels, classes)]
+        labels_res = labels[np.isin(labels, classes)]
 
-    return data, labels
+    return data_res, labels_res
 
 def extractLabels(data, label_column):
     """
